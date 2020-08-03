@@ -3,11 +3,35 @@
   args:
     chdir: "{{ webroot }}"
     creates: "{{ civicrm_custom_path }}/extensions/habitat"
-  when: civicrm == 'Yes' and env == 'Dev'
   become_user: "{{ run_as_user }}"
+  when: civicrm == 'Yes' and env == 'Dev'
 
 - name: Enable Habitat
   command: "cv en habitat"
   args:
     chdir: "{{ webroot }}"
   become_user: "{{ run_as_user }}"
+  when: civicrm == 'Yes'
+
+- name: git commit Habitat
+  command: "git commit -m 'Habitat extension'"
+  args:
+    chdir: "{{ webroot }}"
+  register: commit_result
+  become: yes
+  become_user: "{{ run_as_user }}"
+  changed_when: commit_result.rc == 0
+  failed_when: not(commit_result.rc == 0 or 'nothing to commit, working tree clean' in commit_result.stdout_lines)
+  when: civicrm == 'Yes'
+
+- name: git push
+  command: git push
+  args:
+    chdir: "{{ webroot }}"
+  register: push_result_addl
+  become: yes
+  become_user: "{{ run_as_user }}"
+  when: internal_repo == "1" and (git_repo_push_url is search("ssh://")) and civicrm == 'Yes'
+  changed_when: push_result_addl.rc == 0 and push_result_addl.stderr != 'Everything up-to-date'
+  failed_when: not(push_result_addl.rc == 0)
+
