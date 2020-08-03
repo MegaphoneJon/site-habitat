@@ -1,0 +1,13 @@
+- name: Add Habitat extension
+  command: "git submodule add https://github.com/MegaphoneJon/habitat.git {{ civicrm_custom_path }}/extensions/habitat"
+  args:
+    chdir: "{{ webroot }}"
+    creates: "{{ civicrm_custom_path }}/extensions/habitat"
+  when: civicrm == 'Yes' and env == 'Dev'
+  become_user: "{{ run_as_user }}"
+
+- name: Enable Habitat
+  command: "cv en habitat"
+  args:
+    chdir: "{{ webroot }}"
+  become_user: "{{ run_as_user }}"
