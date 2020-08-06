@@ -22,7 +22,7 @@
   become_user: "{{ run_as_user }}"
   changed_when: commit_result.rc == 0
   failed_when: not(commit_result.rc == 0 or 'nothing to commit, working tree clean' in commit_result.stdout_lines)
-  when: civicrm == 'Yes'
+  when: civicrm == 'Yes' and env == 'Dev'
 
 - name: git push
   command: git push
@@ -31,7 +31,7 @@
   register: push_result_addl
   become: yes
   become_user: "{{ run_as_user }}"
-  when: internal_repo == "1" and (git_repo_push_url is search("ssh://")) and civicrm == 'Yes'
+  when: internal_repo == "1" and (git_repo_push_url is search("ssh://")) and civicrm == 'Yes' and env == 'Dev'
   changed_when: push_result_addl.rc == 0 and push_result_addl.stderr != 'Everything up-to-date'
   failed_when: not(push_result_addl.rc == 0)
 
