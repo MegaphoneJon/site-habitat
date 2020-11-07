@@ -25,7 +25,7 @@
   when: civicrm == 'Yes' and env == 'Dev'
 
 - name: Add habitat-wp
-  command: "git submodule add https://github.com/MegaphoneJon/habitat-wp.git {{ webroot }}/wp-content/plugins/habitat-wp"
+  command: "git submodule add https://github.com/MegaphoneJon/habitat-wp.git wp-content/plugins/habitat-wp"
   args:
     chdir: "{{ gitroot }}"
     creates: "{{ webroot }}/wp-content/plugins/habitat-wp"
