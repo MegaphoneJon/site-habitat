@@ -30,6 +30,7 @@
     chdir: "{{ gitroot }}"
     creates: "{{ webroot }}/wp-content/plugins/habitat-wp"
   become_user: "{{ run_as_user }}"
+  tags: habitat-wp
 
 - name: Enable habitat-wp
   command: "wp plugin activate habitat-wp --path={{ webroot }}"
@@ -45,6 +46,7 @@
   changed_when: commit_result.rc == 0
   failed_when: not(commit_result.rc == 0 or 'nothing to commit, working tree clean' in commit_result.stdout_lines)
   when: cms == 'WordPress' and env == 'Dev'
+  tags: habitat-wp
 
 - name: git push
   command: git push
@@ -56,3 +58,4 @@
   when: internal_repo == "1" and (git_repo_push_url is search("ssh://")) and civicrm == 'Yes' and env == 'Dev'
   changed_when: push_result_addl.rc == 0 and push_result_addl.stderr != 'Everything up-to-date'
   failed_when: not(push_result_addl.rc == 0)
+  tags: habitat-wp
