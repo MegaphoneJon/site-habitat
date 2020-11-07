@@ -24,6 +24,28 @@
   failed_when: not(commit_result.rc == 0 or 'nothing to commit, working tree clean' in commit_result.stdout_lines)
   when: civicrm == 'Yes' and env == 'Dev'
 
+- name: Add habitat-wp
+  command: "git submodule add https://github.com/MegaphoneJon/habitat-wp.git {{ webroot }}/wp-content/plugins/habitat-wp"
+  args:
+    chdir: "{{ gitroot }}"
+    creates: "{{ webroot }}/wp-content/plugins/habitat-wp"
+  become_user: "{{ run_as_user }}"
+
+- name: Enable habitat-wp
+  command: "wp plugin activate habitat-wp --path={{ webroot }}"
+  become_user: "{{ run_as_user }}"
+
+- name: git commit habitat-wp
+  command: "git commit -m 'habitat-wp'"
+  args:
+    chdir: "{{ webroot }}"
+  register: commit_result
+  become: yes
+  become_user: "{{ run_as_user }}"
+  changed_when: commit_result.rc == 0
+  failed_when: not(commit_result.rc == 0 or 'nothing to commit, working tree clean' in commit_result.stdout_lines)
+  when: cms == 'WordPress' and env == 'Dev'
+
 - name: git push
   command: git push
   args:
@@ -34,4 +56,3 @@
   when: internal_repo == "1" and (git_repo_push_url is search("ssh://")) and civicrm == 'Yes' and env == 'Dev'
   changed_when: push_result_addl.rc == 0 and push_result_addl.stderr != 'Everything up-to-date'
   failed_when: not(push_result_addl.rc == 0)
-
