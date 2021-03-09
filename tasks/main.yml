@@ -6,6 +6,24 @@
   become_user: "{{ run_as_user }}"
   when: civicrm == 'Yes' and env == 'Dev'
 
+- name: set git name
+  git_config:
+    name: user.name
+    repo: "{{ gitroot }}"
+    scope: global
+    value: "{{ run_as_user }} on {{ inventory_hostname }}"
+  become_user: "{{ run_as_user }}"
+  when: civicrm == 'Yes' and env == 'Dev'
+
+- name: set git email
+  git_config:
+    name: user.email
+    repo: "{{ gitroot }}"
+    scope: global
+    value: 'none@megaphonetech.com'
+  become_user: "{{ run_as_user }}"
+  when: civicrm == 'Yes' and env == 'Dev'
+
 - name: Enable Habitat
   command: "cv en habitat --refresh"
   args:
