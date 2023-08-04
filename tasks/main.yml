@@ -73,6 +73,6 @@
   register: push_result_addl
   become: yes
   become_user: "{{ run_as_user }}"
-  when: internal_repo == "1" and (git_repo_push_url is search("ssh://")) and civicrm == 'Yes' and env == 'Dev'
+  when: internal_repo == "1" and (git_repo_push_url is not search("https://")) and civicrm == 'Yes' and env == 'Dev'
   changed_when: push_result_addl.rc == 0 and push_result_addl.stderr != 'Everything up-to-date'
   failed_when: not(push_result_addl.rc == 0)
